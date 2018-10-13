@@ -1,0 +1,8 @@
+language: go
+sudo: false
+go:
+  - 1.10.x
+script:
+  - go get -a
+  - go test 
+  - go build
