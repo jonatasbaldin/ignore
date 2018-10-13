@@ -1,5 +1,6 @@
 # Ignore
 Download .gitignore files from the GitHub [gitignore](https://github.com/github/gitignore) repository!
+[![Build Status](https://travis-ci.org/jonatasbaldin/ignore.svg?branch=master)](https://travis-ci.org/jonatasbaldin/ignore)
 
 ### Using it
 Get the binary:
