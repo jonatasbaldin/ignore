@@ -4,7 +4,7 @@ Download .gitignore files from the GitHub [gitignore](https://github.com/github/
 ### Using it
 Get the binary:
 ```
-$ go install github.com/jonatasbaldin/ignore
+$ go get github.com/jonatasbaldin/ignore
 ```
 
 Listing files:
