@@ -19,7 +19,7 @@ const (
 	GHGitignoreRepo = "https://github.com/github/gitignore"
 )
 
-// listFiles ... describe what this function actually does (one line)
+// return a slice of strings containing all the .gitignore file names from GitHub
 func listFiles() (files []string) {
 	c := colly.NewCollector(
 		colly.AllowedDomains("github.com"),
@@ -35,7 +35,7 @@ func listFiles() (files []string) {
 	return
 }
 
-// gitIgnoreExists ... describe what this function actually does (one line)
+// checks if the specified file name exists in the .gitignore list of files from GitHub
 func gitIgnoreExists(fileName string) (exist bool, err error) {
 	for _, f := range listFiles() {
 		if f == fileName {
@@ -47,25 +47,28 @@ func gitIgnoreExists(fileName string) (exist bool, err error) {
 	return
 }
 
-// createUrl ... describe what this function actually does (one line)
+// constructs an URL with the GitHub raw page
 func createUrl(fileName string) (url string) {
 	url = strings.Join([]string{GHRawUrl, fileName, GitIgnoreExt}, "")
 	return
 }
 
-// downloadFileContent ... describe what this function actually does (one line)
-func downloadFileContent(url string) (bodyBytes []byte) {
+// returns the contents from a web page
+func downloadFileContent(url string) (bodyBytes []byte, errReadAll error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		panic(err)
 	}
 	defer resp.Body.Close()
-	// TODO: Never brush the error (_) and do not treat the error in the function, return to those who invoked
-	bodyBytes, _ = ioutil.ReadAll(resp.Body)
+
+	bodyBytes, errReadAll = ioutil.ReadAll(resp.Body)
+	if errReadAll != nil {
+		return
+	}
 	return
 }
 
-// fileExists ... describe what this function actually does (one line)
+// checks if a determined file exists
 func fileExists(path string) (exit bool, err error) {
 	if _, errStat := os.Stat(path); os.IsNotExist(errStat) {
 		exit = true
@@ -75,7 +78,7 @@ func fileExists(path string) (exit bool, err error) {
 	return
 }
 
-// writeFileContent ... describe what this function actually does (one line)
+// write some content to a file
 func writeFileContent(content []byte) {
 	writeFileError := ioutil.WriteFile(GitIgnoreExt, content, 0644)
 	if writeFileError != nil {
@@ -104,7 +107,10 @@ func main() {
 		_, gitIgnoreExistsError := gitIgnoreExists(arg)
 		if gitIgnoreExistsError == nil {
 			url := createUrl(arg)
-			content := downloadFileContent(url)
+			content, errDownloadFileContent := downloadFileContent(url)
+			if errDownloadFileContent != nil {
+				fmt.Println(errDownloadFileContent)
+			}
 			writeFileContent(content)
 		} else {
 			fmt.Println(gitIgnoreExistsError)
