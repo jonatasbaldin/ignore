@@ -116,5 +116,7 @@ func main() {
 			fmt.Println(gitIgnoreExistsError)
 			os.Exit(1)
 		}
+	} else {
+		flag.Usage()
 	}
 }
