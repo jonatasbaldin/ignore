@@ -36,10 +36,11 @@ func listFiles() (files []string) {
 }
 
 // checks if the specified file name exists in the .gitignore list of files from GitHub
-func gitIgnoreExists(fileName string) (exist bool, err error) {
+func gitIgnoreExists(fileName string) (exist bool, name string, err error) {
 	for _, f := range listFiles() {
-		if f == fileName {
+		if strings.EqualFold(f, fileName) {
 			exist = true
+			name = f
 			return
 		}
 	}
@@ -104,9 +105,9 @@ func main() {
 			os.Exit(1)
 		}
 
-		_, gitIgnoreExistsError := gitIgnoreExists(arg)
+		_, name, gitIgnoreExistsError := gitIgnoreExists(arg)
 		if gitIgnoreExistsError == nil {
-			url := createUrl(arg)
+			url := createUrl(name)
 			content, errDownloadFileContent := downloadFileContent(url)
 			if errDownloadFileContent != nil {
 				fmt.Println(errDownloadFileContent)
@@ -116,5 +117,7 @@ func main() {
 			fmt.Println(gitIgnoreExistsError)
 			os.Exit(1)
 		}
+	} else {
+		flag.Usage()
 	}
 }
