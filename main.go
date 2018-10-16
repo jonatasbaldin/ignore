@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -93,30 +94,31 @@ func main() {
 
 	if *list {
 		fmt.Println(strings.Join(listFiles(), "\n"))
-		os.Exit(0)
+		return
 	}
 
 	if len(os.Args) > 1 {
-		arg := os.Args[1]
-
 		_, fileExistsError := fileExists(GitIgnoreExt)
 		if fileExistsError != nil {
-			fmt.Println(fileExistsError)
-			os.Exit(1)
+			log.Fatal(fileExistsError)
 		}
 
-		_, name, gitIgnoreExistsError := gitIgnoreExists(arg)
-		if gitIgnoreExistsError == nil {
-			url := createUrl(name)
-			content, errDownloadFileContent := downloadFileContent(url)
-			if errDownloadFileContent != nil {
-				fmt.Println(errDownloadFileContent)
+		var content []byte
+		for _, arg := range os.Args[1:] {
+			_, name, err := gitIgnoreExists(arg)
+			if err != nil {
+				log.Fatal(err)
 			}
-			writeFileContent(content)
-		} else {
-			fmt.Println(gitIgnoreExistsError)
-			os.Exit(1)
+
+			url := createUrl(name)
+			argContent, err := downloadFileContent(url)
+			if err != nil {
+				log.Fatal(err)
+			}
+			content = append(content, argContent...)
 		}
+
+		writeFileContent(content)
 	} else {
 		flag.Usage()
 	}
