@@ -104,7 +104,7 @@ func main() {
 		}
 
 		var content []byte
-		for _, arg := range os.Args[1:] {
+		for i, arg := range os.Args[1:] {
 			_, name, err := gitIgnoreExists(arg)
 			if err != nil {
 				log.Fatal(err)
@@ -115,6 +115,16 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
+
+			if i != 0 {
+				// add a blank line for every arg except the first
+				content = append(content, byte('\n'))
+			}
+
+			// add a header with the url of the arg
+			header := fmt.Sprintf("# %s\n\n", url)
+			content = append(content, []byte(header)...)
+
 			content = append(content, argContent...)
 		}
 
