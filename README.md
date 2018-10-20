@@ -1,5 +1,4 @@
 # Ignore
-
 Download .gitignore files from the GitHub [gitignore](https://github.com/github/gitignore) repository!
 
 [![Build Status](https://travis-ci.org/jonatasbaldin/ignore.svg?branch=master)](https://travis-ci.org/jonatasbaldin/ignore)
@@ -30,10 +29,13 @@ Downloading a file:
 $ ignore Python
 ```
 
-## For developer
+## Contributing
 
 ```
-cd /path/to/this/rep
+go get -u github.com/golang/dep/cmd/dep # if dep is not installed
+
+git clone git@github.com:jonatasbaldin/ignore.git
+cd ignore
 dep ensure -v
 go build
 ```
