@@ -16,8 +16,8 @@ import (
 
 const (
 	GitIgnoreExt    = ".gitignore"
-	GHRawUrl        = "https://raw.githubusercontent.com/github/gitignore/master/"
-	GHGitignoreRepo = "https://github.com/github/gitignore"
+	GHRawUrl        = "https://raw.githubusercontent.com/dvcs/gitignore/master/templates/"
+	GHGitignoreRepo = "https://github.com/dvcs/gitignore/tree/master/templates"
 )
 
 // return a slice of strings containing all the .gitignore file names from GitHub

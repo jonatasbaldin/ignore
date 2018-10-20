@@ -1,5 +1,5 @@
 # Ignore
-Download .gitignore files from the GitHub [gitignore](https://github.com/github/gitignore) repository!
+Download .gitignore files from the DVCS [gitignore](https://github.com/dvcs/gitignore) repository!
 
 [![Build Status](https://travis-ci.org/jonatasbaldin/ignore.svg?branch=master)](https://travis-ci.org/jonatasbaldin/ignore)
 
