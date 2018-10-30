@@ -41,7 +41,6 @@ func TestDownloadFileContent(t *testing.T) {
 func TestGitIgnoreExist(t *testing.T) {
 	fileName := "Python"
 	if _, _, err := gitIgnoreExists(fileName); err != nil {
-		t.Errorf("[FAILED] - Exist gitignore for %s", fileName)
 		t.Errorf("gitIgnoreExists(%s) was incorrect. Got: error to exist git ignore %s, want: nil error", fileName, fileName)
 	}
 
