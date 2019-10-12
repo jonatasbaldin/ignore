@@ -20,6 +20,8 @@ const (
 	GHGitignoreRepo = "https://github.com/dvcs/gitignore/tree/master/templates"
 )
 
+var appVersion = "0.0.0"
+
 // return a slice of strings containing all the .gitignore file names from GitHub
 func listFiles(pageUrl string) (files []string) {
 	c := colly.NewCollector()
@@ -91,10 +93,16 @@ func writeFileContent(content []byte) {
 
 func main() {
 	list := flag.Bool("list", false, "list all .gitignore files")
+	version := flag.Bool("version", false, "prints current ignore version")
 	flag.Parse()
 
 	if *list {
 		fmt.Println(strings.Join(listFiles(GHGitignoreRepo), "\n"))
+		return
+	}
+
+	if *version {
+		fmt.Println(appVersion)
 		return
 	}
 
