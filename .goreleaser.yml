@@ -1,0 +1,44 @@
+# This is an example goreleaser.yaml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+project_name: ignore
+dist: ./build
+before:
+  hooks:
+    - make clean
+    - make configure
+builds:
+  - main: ./
+    binary: ignore
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - 386
+      - amd64
+    ldflags:
+      - -X main.appVersion={{.Version}} -extldflags "-static" -w -s
+archive:
+  name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
+  replacements:
+    darwin: osx
+    386: i386
+    amd64: x86_64
+  format_overrides:
+    - goos: windows
+      format: zip
+checksum:
+  name_template: '{{ .ProjectName }}_checksums.txt'
+nfpm:
+  name_template: '{{ .ProjectName }}_{{ .Arch }}'
+  vendor: ignore
+  homepage: https://github.com/jonatasbaldin/ignore
+  maintainer: Jonatas Baldin <jonatas.baldin@gmail.com>
+  description: Download .gitignore files from the GitHub gitignore repository!
+  license: MIT
+  formats:
+    - deb
+    - rpm
