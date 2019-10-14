@@ -21,7 +21,7 @@ const (
 )
 
 // return a slice of strings containing all the .gitignore file names from GitHub
-func listFiles(u string) (files []string) {
+func listFiles(pageUrl string) (files []string) {
 	c := colly.NewCollector(
 		colly.AllowedDomains("github.com", "127.0.0.1"),
 	)
@@ -33,10 +33,8 @@ func listFiles(u string) (files []string) {
 		}
 	})
 
-	err := c.Visit(u)
-	if err != nil {
-		fmt.Println(u)
-		log.Fatal(err)
+	if err := c.Visit(pageUrl); err != nil {
+		log.Fatalf("Couldn't visit the URL %q – [Error]: %q", pageUrl, err)
 	}
 	return
 }
