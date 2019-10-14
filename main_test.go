@@ -2,10 +2,39 @@ package main
 
 import (
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	gock "gopkg.in/h2non/gock.v1"
 )
+
+func newTestServer() *httptest.Server {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		w.Write([]byte(`<!DOCTYPE html>
+<html>
+<head>
+  <title>GitHub Mock</title>
+</head>
+<body>
+<table class="files">
+  <td class="content">
+    <a href="/toptal/gitignore/blob/master/templates/Go.gitignore">Go.gitignore</a>
+  </td>
+  <td class="content">
+    <a href="/toptal/gitignore/blob/master/templates/Python.gitignore">Python.gitignore</a>
+  </td>
+</table>
+</body>
+</html>
+		`))
+	})
+
+	return httptest.NewServer(mux)
+}
 
 func TestCreateUrl(t *testing.T) {
 	url := createUrl("Python")
@@ -40,12 +69,13 @@ func TestDownloadFileContent(t *testing.T) {
 
 func TestGitIgnoreExist(t *testing.T) {
 	fileName := "Python"
-	if _, _, err := gitIgnoreExists(fileName); err != nil {
+	ts := newTestServer()
+	if _, _, err := gitIgnoreExists(ts.URL, fileName); err != nil {
 		t.Errorf("gitIgnoreExists(%s) was incorrect. Got: error to exist git ignore %s, want: nil error", fileName, fileName)
 	}
 
 	fileName = "gitIgnoreNotFound"
-	if _, _, err := gitIgnoreExists(fileName); err == nil {
+	if _, _, err := gitIgnoreExists(ts.URL, fileName); err == nil {
 		t.Errorf("gitIgnoreExists(%s) was incorrect. Got: nil error, want: error to exist file %s", fileName, fileName)
 	}
 }
@@ -58,8 +88,9 @@ func TestFileExists(t *testing.T) {
 }
 
 func TestListFiles(t *testing.T) {
-	if files := listFiles(); len(files) == 0 {
-		t.Error("listFiles() was incorrect. Got empty list")
+	ts := newTestServer()
+	if files := listFiles(ts.URL); len(files) != 2 {
+		t.Errorf("listFiles expected 2 files, but got %d files", len(files))
 	}
 }
 
