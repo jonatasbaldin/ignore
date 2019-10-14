@@ -21,24 +21,27 @@ const (
 )
 
 // return a slice of strings containing all the .gitignore file names from GitHub
-func listFiles() (files []string) {
+func listFiles(pageUrl string) (files []string) {
 	c := colly.NewCollector(
-		colly.AllowedDomains("github.com"),
+		colly.AllowedDomains("github.com", "127.0.0.1"),
 	)
 	c.OnHTML("table.files td.content a[href]", func(e *colly.HTMLElement) {
 		href := e.Attr("href")
 		if strings.HasSuffix(href, GitIgnoreExt) {
 			unscapedHref, _ := url.QueryUnescape(href)
-			files = append(files, (path.Base(strings.TrimSuffix(unscapedHref, GitIgnoreExt))))
+			files = append(files, path.Base(strings.TrimSuffix(unscapedHref, GitIgnoreExt)))
 		}
 	})
-	c.Visit(GHGitignoreRepo)
+
+	if err := c.Visit(pageUrl); err != nil {
+		log.Fatalf("Couldn't visit the URL %q – [Error]: %q", pageUrl, err)
+	}
 	return
 }
 
 // checks if the specified file name exists in the .gitignore list of files from GitHub
-func gitIgnoreExists(fileName string) (exist bool, name string, err error) {
-	for _, f := range listFiles() {
+func gitIgnoreExists(listUrl string, fileName string) (exist bool, name string, err error) {
+	for _, f := range listFiles(listUrl) {
 		if strings.EqualFold(f, fileName) {
 			exist = true
 			name = f
@@ -93,7 +96,7 @@ func main() {
 	flag.Parse()
 
 	if *list {
-		fmt.Println(strings.Join(listFiles(), "\n"))
+		fmt.Println(strings.Join(listFiles(GHGitignoreRepo), "\n"))
 		return
 	}
 
@@ -105,7 +108,7 @@ func main() {
 
 		var content []byte
 		for i, arg := range os.Args[1:] {
-			_, name, err := gitIgnoreExists(arg)
+			_, name, err := gitIgnoreExists(GHGitignoreRepo, arg)
 			if err != nil {
 				log.Fatal(err)
 			}
