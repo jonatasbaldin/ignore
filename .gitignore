@@ -12,3 +12,6 @@
 *.out
 
 ignore
+
+# Go mod vendor
+vendor/
