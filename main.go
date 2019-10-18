@@ -22,9 +22,7 @@ const (
 
 // return a slice of strings containing all the .gitignore file names from GitHub
 func listFiles(pageUrl string) (files []string) {
-	c := colly.NewCollector(
-		colly.AllowedDomains("github.com", "127.0.0.1"),
-	)
+	c := colly.NewCollector()
 	c.OnHTML("table.files td.content a[href]", func(e *colly.HTMLElement) {
 		href := e.Attr("href")
 		if strings.HasSuffix(href, GitIgnoreExt) {
